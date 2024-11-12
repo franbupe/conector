@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="header">
+        <img src="logo.png" alt="Logo de la aplicación" class="logo">
+        <h1 class="titulo">TAREAS PARA LAS MAQUINAS IMPRIMO</h1>
+    </header>
+    
+    <!-- Contenedor principal de tareas con el logo centrado -->
+    <div class="container">
+        
+        <div id="proyectoContainer" class="row"></div>
+    </div>
+    
+    <script src="script.js"></script>
+	<!-- Overlay oscuro para el fondo -->
+<div id="overlay" class="overlay"></div>
+
+<!-- Popup para el contador -->
+<!-- Popup para el contador -->
+<div id="popupContador" class="popup-contador">
+    <div class="popup-contenido">
+        <button id="cerrarPopup" class="btn-cerrar">&times;</button>
+        <h2 id="popupTitulo"></h2>
+        <p class="tarea-info"><strong>Tarea:</strong> <span id="nombreTareaPopup"></span></p>
+        
+        <!-- Objetivo de productos a realizar -->
+        <p><strong>Objetivo de productos:</strong> <span id="objetivoProductosPopup">0</span></p>
+        
+        <div class="configuracion">
+            <label for="productosPorPlanchaPopup">Productos por plancha:</label>
+            <input type="number" id="productosPorPlanchaPopup" value="1" min="1">
+        </div>
+        <div class="contador">
+            <button id="decrementarPopup" class="btn btn-secondary">- Defectuoso</button>
+            <span id="contadorValorPopup">0</span>
+            <button id="incrementarPopup" class="btn btn-primary">+ Plancha Completa</button>
+        </div>
+        <button id="finalizarConteoPopup" class="btn btn-success mt-4">Finalizar y Guardar</button>
+    </div>
+</div>
+
+
+</body>
+</html>
