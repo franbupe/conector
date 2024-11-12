@@ -1,25 +1,13 @@
 const apiKey = '41c0fff04435e0638a6406d64376d702';// Coloca aquí tu API Key de Holded
-
 const proyectoIdDeseado = '6673294de56217109c01baeb';// ID de proyecto específico de Holded
-const apiUrlBase = 'https://conector-holder.vercel.app/api/projects/v1'; // URL del proxy en Vercel
-
-
 // Llama a cargarProyecto directamente para que cargue al inicio
 cargarProyecto();
-
 function cargarProyecto() {
     const options = {
-    method: 'GET',
-    headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',  // Asegura el tipo de contenido JSON
-        'key': apiKey
-    }
-};
-
-
-    /*fetch(`https://api.holded.com/api/projects/v1/projects`, options)*/
-	fetch(`${apiUrlBase}/projects`, options)
+        method: 'GET',
+        headers: { accept: 'application/json', key: apiKey }
+    };
+    fetch(`https://api.holded.com/api/projects/v1/projects`, options)
         .then(response => response.json())
         .then(proyectos => {
             const proyecto = proyectos.find(p => p.id === proyectoIdDeseado);
@@ -35,7 +23,6 @@ function cargarProyecto() {
             document.getElementById('proyectoContainer').innerHTML = '<p>No se pudo obtener el proyecto.</p>';
         });
 }
-
 function mostrarProyecto(proyecto) {
     const proyectoContainer = document.getElementById('proyectoContainer');
     proyectoContainer.innerHTML = `
@@ -51,19 +38,16 @@ function mostrarProyecto(proyecto) {
         </div>
     `;
 }
-
 function cargarTareasPorProyecto(proyecto) {
     const options = {
         method: 'GET',
         headers: { accept: 'application/json', key: apiKey }
     };
-
     fetch('https://api.holded.com/api/projects/v1/tasks', options)
         .then(response => response.json())
         .then(tareas => {
             const tareasFiltradas = tareas.filter(tarea => tarea.projectId === proyectoIdDeseado);
             mostrarTareasPorCategoria(tareasFiltradas, proyecto);
-
             // Código adicional para mostrar todos los estados en consola
             const estadosUnicos = [...new Set(tareasFiltradas.map(tarea => tarea.status))];
             console.log("Estados únicos devueltos por la API de Holded:", estadosUnicos);
@@ -73,12 +57,9 @@ function cargarTareasPorProyecto(proyecto) {
             document.getElementById(`tareas-${proyectoIdDeseado}`).innerHTML = '<p>No se pudieron obtener las tareas.</p>';
         });
 }
-
-
 function mostrarTareasPorCategoria(tareas, proyecto) {
     const tareasContainer = document.getElementById(`tareas-${proyectoIdDeseado}`);
     tareasContainer.innerHTML = '';
-
     const estadoClases = {
         new: 'estado-nuevo',
         rejected: 'estado-rechazado',
@@ -89,7 +70,6 @@ function mostrarTareasPorCategoria(tareas, proyecto) {
 		facturaryenviar: 'facturar-y-enviar'
 		
     };
-
     proyecto.lists.forEach(list => {
         const categoriaContainer = document.createElement('div');
         categoriaContainer.classList.add('columna-tareas');
@@ -99,7 +79,6 @@ function mostrarTareasPorCategoria(tareas, proyecto) {
             <div class="tareas-lista" id="tareas-lista-${list.id}"></div>
         `;
         tareasContainer.appendChild(categoriaContainer);
-
         const tareasEnCategoria = tareas.filter(tarea => tarea.listId === list.id);
         const tareasLista = document.getElementById(`tareas-lista-${list.id}`);
         
@@ -113,7 +92,6 @@ function mostrarTareasPorCategoria(tareas, proyecto) {
                 claseEstado = estadoClases.in_progress;
                 tarea.status = 'in_progress'; // Cambia el estado de la tarea a "en proceso"
             }
-
             const tareaHTML = `
                 <div class="tarea-item ${claseEstado}" data-tarea-id="${tarea.id}" onclick="iniciarConteo('${tarea.id}', '${tarea.name}')">
                     <p><strong>${tarea.name}</strong></p>
@@ -123,16 +101,11 @@ function mostrarTareasPorCategoria(tareas, proyecto) {
             `;
             tareasLista.innerHTML += tareaHTML;
         });
-
         if (tareasEnCategoria.length === 0) {
             tareasLista.innerHTML = '<p>No hay tareas en esta categoría.</p>';
         }
     });
 }
-
-
-
-
 function iniciarConteo(tareaId, tareaName) {
     document.getElementById('nombreTareaPopup').textContent = tareaName;
     document.getElementById('popupTitulo').textContent = `Conteo para la tarea: ${tareaName}`;
@@ -142,17 +115,14 @@ function iniciarConteo(tareaId, tareaName) {
     popup.style.display = 'block';
     overlay.style.display = 'block';
     popup.classList.add('mostrar');
-
     // Extraer el número de productos del título de la tarea usando una expresión regular
     const match = tareaName.match(/\d+/);
     const objetivoProductos = match ? parseInt(match[0]) : 0; // Si no hay número, el objetivo será 0
     document.getElementById('objetivoProductosPopup').textContent = objetivoProductos;
-
     // Cargar el conteo actual de productos desde localStorage
     let contador = parseInt(localStorage.getItem(`conteo_${tareaId}`)) || 0;
     const contadorValor = document.getElementById('contadorValorPopup');
     contadorValor.textContent = contador;
-
     // Función para verificar si se ha alcanzado el objetivo
     function verificarObjetivo() {
         if (contador >= objetivoProductos && objetivoProductos > 0) {
@@ -160,21 +130,18 @@ function iniciarConteo(tareaId, tareaName) {
             popup.classList.add('objetivo-alcanzado');
         }
     }
-
     document.getElementById('incrementarPopup').addEventListener('click', () => {
         const productosPorPlancha = parseInt(document.getElementById('productosPorPlanchaPopup').value) || 1;
         contador += productosPorPlancha;
         contadorValor.textContent = contador;
         verificarObjetivo(); // Verifica si se ha alcanzado el objetivo después de cada incremento
     });
-
     document.getElementById('decrementarPopup').addEventListener('click', () => {
         if (contador > 0) {
             contador -= 1;
             contadorValor.textContent = contador;
         }
     });
-
     document.getElementById('finalizarConteoPopup').addEventListener('click', () => {
         localStorage.setItem(`conteo_${tareaId}`, contador);
         alert(`Conteo finalizado. Total productos: ${contador}`);
@@ -182,10 +149,8 @@ function iniciarConteo(tareaId, tareaName) {
         cargarProyecto(); 
         cerrarPopup();
     });
-
     document.getElementById('cerrarPopup').addEventListener('click', cerrarPopup);
 }
-
 function cerrarPopup() {
     const popup = document.getElementById('popupContador');
     const overlay = document.getElementById('overlay');
@@ -193,8 +158,6 @@ function cerrarPopup() {
     overlay.style.display = 'none';
     popup.classList.remove('mostrar');
 }
-
-
 function cerrarPopup() {
     const popup = document.getElementById('popupContador');
     const overlay = document.getElementById('overlay');
@@ -202,8 +165,6 @@ function cerrarPopup() {
     overlay.style.display = 'none';
     popup.classList.remove('mostrar');
 }
-
-
 function cerrarPopup() {
     const popup = document.getElementById('popupContador');
     const overlay = document.getElementById('overlay');
@@ -211,8 +172,6 @@ function cerrarPopup() {
     overlay.style.display = 'none';
     popup.classList.remove('mostrar');
 }
-
-
 function cerrarPopup() {
     const popup = document.getElementById('popupContador');
     const overlay = document.getElementById('overlay');
@@ -220,7 +179,6 @@ function cerrarPopup() {
     overlay.style.display = 'none';
     popup.classList.remove('mostrar');
 }
-
 function actualizarConteoTarea(tareaId, nuevoConteo) {
     // Seleccionar el elemento que muestra el conteo de productos en la tarea específica
     const tareaElemento = document.querySelector(`[data-tarea-id="${tareaId}"] .productos-realizados`);
@@ -228,8 +186,6 @@ function actualizarConteoTarea(tareaId, nuevoConteo) {
         tareaElemento.textContent = `Productos realizados: ${nuevoConteo}`;
     }
 }
-
-
 function cerrarPopup() {
     const popup = document.getElementById('popupContador');
     const overlay = document.getElementById('overlay');
@@ -237,8 +193,6 @@ function cerrarPopup() {
     overlay.style.display = 'none';
     popup.classList.remove('mostrar');
 }
-
-
 function cerrarPopup() {
     const popup = document.getElementById('popupContador');
     const overlay = document.getElementById('overlay');
@@ -246,19 +200,15 @@ function cerrarPopup() {
     overlay.style.display = 'none';
     popup.classList.remove('mostrar');
 }
-
 // Cargar las tareas inmediatamente al iniciar
 cargarProyecto();
-
 // Configuración del intervalo de actualización (5 minutos en este caso)
 const INTERVALO_ACTUALIZACION = 60000; // 60000 ms = 1 minuto
-
 // Función para actualizar las tareas automáticamente
 setInterval(() => {
     console.log("Actualizando las tareas...");
     cargarProyecto(); // Vuelve a cargar el proyecto y las tareas
 }, INTERVALO_ACTUALIZACION);
-
 /*function reiniciarContadores() {
     Object.keys(localStorage).forEach(key => {
         if (key.startsWith("conteo_")) {
@@ -267,6 +217,5 @@ setInterval(() => {
     });
     console.log("Todos los contadores han sido reiniciados.");
 }
-
 // Llamar a la función para reiniciar los contadores
 reiniciarContadores();*/
